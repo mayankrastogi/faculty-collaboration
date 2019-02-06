@@ -46,11 +46,11 @@ Your homework assignment is to create a program using the map/reduce model for p
 You will create and run your software application using [Apache Hadoop](http://hadoop.apache.org/), a framework for distributed processing of large data sets across multiple computers (or even on a single node) using the map/reduce model. If your laptop/workstation is limited in its RAM, you can use [Cloudera QuickStart VM with the minimum req of RAM 4Gb](https://www.cloudera.com/downloads/quickstart_vms/5-12.html). Even though you can install and configure Hadoop on your computers, I recommend that you use a virtual machine (VM) of [Hortonworks Sandbox](http://hortonworks.com/products/sandbox/), a preconfigured Apache Hadoop installation with a comprehensive software stack. To run the VM, you can install vmWare or VirtualBox. As UIC students, you have access to free vmWare licenses, go to http://go.uic.edu/csvmware to obtain your free license. In some cases, I may have to provide your email addresses to a department administrator to enable your free VM academic licenses. Please notify me if you cannot register and gain access to the webstore.
 
 The steps for obtaining your free academic vmWare licenses are the following:
-..1. Go to [Onthehub vmWare](http://go.uic.edu/csvmware).
-..2. Click on the "sign in" link at the top.
-..3. Click on "register".
-..4. Select "An account has been created..." and continue with the registration.
-..5. Make sure that you use the UIC email with which you are registered with the system.
+- Go to [Onthehub vmWare](http://go.uic.edu/csvmware).
+- Click on the "sign in" link at the top.
+- Click on "register".
+- Select "An account has been created..." and continue with the registration.
+- Make sure that you use the UIC email with which you are registered with the system.
 
 Only UIC students who are registered for this course are eligible. If you are auditing the course, you need to contact the uic webstore directly. Alternatively, you can use [VirtualBox from Oracle Corp](https://www.virtualbox.org/).
 
