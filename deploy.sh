@@ -8,7 +8,7 @@ hdfs dfs -test -d output_dir
 if [ $? == 0 ]
 then
     echo "output_dir already exists! Deleting the directory..."
-    hdfs dfs -rmr -skipTrash output_dir
+    hdfs dfs -rm -r -skipTrash output_dir
     echo "output_dir removed"
 else
     echo "output_dir does not exist"
