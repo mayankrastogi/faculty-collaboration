@@ -28,8 +28,15 @@ class Settings(config: Config) {
   // Graph Generation
 
   val graphName: String = getString("graph.name")
-  val graphLabel: String = getString("graph.label")
+  val graphLabelText: String = getString("graph.label.text")
+  val graphLabelFontSize: Double = getDouble("graph.label.font-size")
   val graphOutputFilePath: String = getString("graph.output-file-path")
+  val graphColorSchemeName: String = getString("graph.color-scheme.name")
+  val graphColorSchemeNumberOfColors: Int = getInt("graph.color-scheme.number-of-colors")
+  val graphDimensions: Int = getInt("graph.dimensions")
+  val graphOverlap: String = getString("graph.overlap")
+  val graphSeparation: Double = getDouble("graph.separation")
+  val graphSplines: Boolean = getBoolean("graph.splines")
 
   // Map Reduce Job Config
   val jobName: String = getString("job.name")
