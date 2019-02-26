@@ -23,11 +23,14 @@ libraryDependencies ++= Seq(
 
   // Apache Hadoop
   "org.apache.hadoop" % "hadoop-common" % "3.2.0" exclude("org.slf4j", "slf4j-log4j12"),
-  "org.apache.hadoop" % "hadoop-client" % "3.2.0" exclude("org.slf4j", "slf4j-log4j12"),
+//  "org.apache.hadoop" % "hadoop-client" % "3.2.0" exclude("org.slf4j", "slf4j-log4j12"),
   "org.apache.hadoop" % "hadoop-mapreduce-client-core" % "3.2.0" exclude("org.slf4j", "slf4j-log4j12"),
 
   // Apache Mahout Integration package for using XmlInputFormat
   "org.apache.mahout" % "mahout-integration" % "0.13.0" exclude("org.slf4j", "slf4j-log4j12"),
+  
+  // Scala XML module
+  "org.scala-lang.modules" %% "scala-xml" % "1.1.1",
 
   // Scalatest testing framework
   "org.scalatest" %% "scalatest" % "3.0.5" % "test",
