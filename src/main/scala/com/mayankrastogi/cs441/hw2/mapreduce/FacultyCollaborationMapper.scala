@@ -47,7 +47,13 @@ class FacultyCollaborationMapper extends Mapper[LongWritable, Text, Text, IntWri
   }
 
   def extractSortedListOfUICFacultyFromPublication(publicationElement: Elem): Seq[String] = {
-    (publicationElement \\ "author").collect({ case node if facultyLookupTable contains node.text => facultyLookupTable(node.text) }).sorted
+
+    val authorLookupTag = publicationElement.child.head.label match {
+      case "book" | "proceedings" => "editor"
+      case _ => "author"
+    }
+
+    (publicationElement \\ authorLookupTag).collect({ case node if facultyLookupTable contains node.text => facultyLookupTable(node.text) }).sorted
   }
 
   def generateFacultyPairs(faculty: Seq[String]): Iterator[String] = {

@@ -9,7 +9,6 @@ import org.apache.hadoop.io.{IntWritable, Text}
 import org.apache.hadoop.mapreduce.Job
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
 import org.apache.hadoop.mapreduce.lib.output.{FileOutputFormat, TextOutputFormat}
-import org.apache.mahout.text.wikipedia.XmlInputFormat
 
 object FacultyCollaborationDriver extends LazyLogging {
   private val settings = new Settings(ConfigFactory.load())
@@ -24,8 +23,9 @@ object FacultyCollaborationDriver extends LazyLogging {
     logger.debug("Configuring MapReduce Job...")
 
     val conf = new Configuration()
-    conf.set(XmlInputFormat.START_TAG_KEY, "<article")
-    conf.set(XmlInputFormat.END_TAG_KEY, "</article>")
+
+    conf.setStrings(MultiTagXmlInputFormat.START_TAG_KEY, settings.xmlInputStartTags: _*)
+    conf.setStrings(MultiTagXmlInputFormat.END_TAG_KEY, settings.xmlInputEndTags: _*)
 
     val job = Job.getInstance(conf, settings.jobName)
 
@@ -35,7 +35,7 @@ object FacultyCollaborationDriver extends LazyLogging {
     job.setMapperClass(classOf[FacultyCollaborationMapper])
     job.setCombinerClass(classOf[FacultyCollaborationReducer])
     job.setReducerClass(classOf[FacultyCollaborationReducer])
-    job.setInputFormatClass(classOf[XmlInputFormat])
+    job.setInputFormatClass(classOf[MultiTagXmlInputFormat])
     job.setOutputFormatClass(classOf[TextOutputFormat[Text, IntWritable]])
 
     FileInputFormat.setInputPaths(job, new Path(inputDir))

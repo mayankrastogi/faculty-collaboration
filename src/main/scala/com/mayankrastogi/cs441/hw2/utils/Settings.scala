@@ -39,7 +39,10 @@ class Settings(config: Config) {
   val graphSplines: Boolean = getBoolean("graph.splines")
 
   // Map Reduce Job Config
+
   val jobName: String = getString("job.name")
+  val xmlInputStartTags: List[String] = getStringList("xml-input.start-tags")
+  val xmlInputEndTags: List[String] = getStringList("xml-input.end-tags")
 
   // ===================================================================================================================
   // Private Helpers
@@ -55,10 +58,12 @@ class Settings(config: Config) {
 
   private def getLong(path: String): Long = config.getLong(configPath(path))
 
+  private def getString(path: String): String = config.getString(configPath(path))
+
+  private def getStringList(path: String): List[String] = config.getStringList(configPath(path)).asScala.toList
+
   /** Prefixes root key to the specified path to avoid typing it each time a parameter is fetched. */
   private def configPath(path: String): String = s"${Settings.CONFIG_NAMESPACE}.$path"
-
-  private def getString(path: String): String = config.getString(configPath(path))
 }
 
 /** Companion object to define "static" members for SimulationConfig class */
