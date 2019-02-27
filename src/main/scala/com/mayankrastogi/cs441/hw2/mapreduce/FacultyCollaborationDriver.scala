@@ -14,6 +14,12 @@ object FacultyCollaborationDriver extends LazyLogging {
   private val settings = new Settings(ConfigFactory.load())
 
   def main(args: Array[String]): Unit = {
+    logger.trace(s"main(args: ${args.mkString})")
+
+    if(args.length < 2) {
+      logger.error("Input and/or output paths not provided.")
+      System.exit(-1)
+    }
     runJob(args(0), args(1))
   }
 
