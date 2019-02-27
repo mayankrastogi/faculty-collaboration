@@ -33,6 +33,10 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.0.5" % "test",
 )
 
+// Set default main class for "sbt run" and "sbt assembly"
+mainClass in (Compile, run) := Some("com.mayankrastogi.cs441.hw2.mapreduce.FacultyCollaborationDriver")
+mainClass in assembly := Some("com.mayankrastogi.cs441.hw2.mapreduce.FacultyCollaborationDriver")
+
 // Create a deployment task to automate copying the jar file to HDP sandbox and then starting the job.
 
 lazy val deploy = taskKey[Unit]("Deploys jar file to sandbox and runs the map reduce job.")
