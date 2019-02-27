@@ -99,7 +99,7 @@ object GraphGenerator extends LazyLogging {
 
       val logOfPublications = Math.log1p(faculty.publications)
       val nodeSize = logOfPublications * nodeSizeScalingMultiplier
-      val color = Math.floor(nodeSize * 10.0).toInt
+      val color = Math.ceil(nodeSize * colorsInColorScheme).toInt
 
       s"""$builtOutput
          |    "${faculty.name}" [ label="${faculty.name}\\n(${faculty.publications})", width=$nodeSize, color=$color ];
