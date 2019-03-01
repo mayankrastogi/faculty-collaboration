@@ -1,5 +1,7 @@
 package com.mayankrastogi.cs441.hw2.utils
 
+import java.io.File
+
 import scala.io.Source
 
 /**
@@ -49,6 +51,32 @@ object Utils {
       // We need to use the class loader to get the URI so that the path does not depend on whether the program is run
       // using jar file or without it
       getClass.getClassLoader.getResource(resourcePath).toURI.toString
+    }
+  }
+
+  /**
+    * Lists all files within the specified path.
+    *
+    * If the specified path is a file itself, the returned list contains that file, otherwise a list of all first-level
+    * files within the specified directory is returned. An empty list is returned if the specified path doesn't exist,
+    * or if it does not contain any files.
+    *
+    * @param dirPath Path to a directory on the file system
+    * @param excludedFileNames A list of file names that should be excluded from the returned list of files
+    * @return List of files within `dirPath`
+    */
+  def getListOfFiles(dirPath: String, excludedFileNames: List[String]):List[File] = {
+    val dir = new File(dirPath)
+    if(dir.exists()) {
+      if(dir.isDirectory) {
+        dir.listFiles(file => file.isFile && !excludedFileNames.contains(file.getName)).toList
+      }
+      else {
+        List(dir)
+      }
+    }
+    else {
+      List()
     }
   }
 }

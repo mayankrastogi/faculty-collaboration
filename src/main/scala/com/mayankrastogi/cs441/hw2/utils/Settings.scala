@@ -38,6 +38,8 @@ class Settings(config: Config) {
   val graphSeparation: Double = getDouble("graph.separation")
   val graphSplines: Boolean = getBoolean("graph.splines")
 
+  val graphGenerationExcludedFileNames: List[String] = getStringList("graph.excluded-file-names")
+
   // Map Reduce Job Config
 
   val jobName: String = getString("job.name")
