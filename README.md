@@ -44,39 +44,45 @@ The project was developed using the following environment:
     ```
     sbt clean compile assembly
     ```
+    
 4. Start HDP sandbox VM
 5. Copy the jar file  to HDP Sandbox VM
     
     ```
     scp -P 2222 target/scala-2.12/mayank_k_rastogi_hw2-assembly-0.1.jar root@sandbox-hdp.hortonworks.com:~/
     ```
+    
 6. Copy `dblp.xml` to HDP Sandbox
     
     ```
     scp -P 2222 /path/to/dblp.xml root@sandbox-hdp.hortonworks.com:~/
     ```
+    
 7. SSH into HDP Sandbox
     
     ```
     ssh -p 2222 root@sandbox-hdp.hortonworks.com
     ```
+    
 8. Create input directory on HDFS and copy `dblp.xml` there
     
     ```
     hdfs dfs -mkdir input_dir
     hdfs dfs -put dblp.xml input_dir/
     ```
+    
 9. Start the map-reduce job
     
     ```
     hadoop jar mayank_k_rastogi_hw2-assembly-0.1.jar input_dir output_dir
     ```
+    
 10. You may check the logs using the YARN and grep. The application ID will get printed when the map-reduce job is run
     
     ```
     yarn logs -applicationId application_<your-application-id> | grep FacultyCollaboration
     ```
-
+    
 #### Generating the `.dot` file
 
 1. Once the map-reduce job is finished, copy the output files from `output_dir` (on HDFS) to `map_reduce_output` (on HDP Sandbox)
@@ -84,16 +90,19 @@ The project was developed using the following environment:
     ```
     hdfs dfs -get output_dir map_reduce_output
     ```
+    
 2. Logout from your SSH session on HDP Sandbox
     
     ```
     exit
     ```
+    
 3. Copy the `map_reduce_output` directory to your local system
     
     ```
     scp -P 2222 -r root@sandbox-hdp.hortonworks.com:~/map_reduce_output ./
     ```
+    
 4. Run the `GraphGenerator` to read `map_reduce_output` and generate `faculty_collaborations.dot` file
     
     ```
