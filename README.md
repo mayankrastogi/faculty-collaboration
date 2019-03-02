@@ -1,97 +1,169 @@
-# Homework 2
-### Description: you will gain experience with the map/reduce computational model.
-### Grade: 5% + bonus up to 3% for deploying your map/reduce program at [AWS EMR](https://aws.amazon.com/emr).
-#### You can obtain this Git repo using the command git clone git@bitbucket.org:cs441_spring2019/homework2.git. You cannot push your code into this repo, otherwise, your grade for this homework will be ZERO!
+## CS 441 - Engineering Distributed Objects for Cloud Computing
+## Homework 2
 
-## Preliminaries
-If you have not already done so as part of your first homework, you must create your account at [BitBucket](https://bitbucket.org/), a Git repo management system. It is imperative that you use your UIC email account that has the extension @uic.edu. Once you create an account with your UIC address, BibBucket will assign you an academic status that allows you to create private repos. Bitbucket users with free accounts cannot create private repos, which are essential for submitting your homeworks and the course project. Your instructor created a team for this class named [cs441_Spring2019](https://bitbucket.org/cs441_spring2019/). Please contact your TA [Shen Wang](swang224@uic.edu) from your **UIC.EDU** account and they will add you to the team repo as developers, since they already have the admin privileges. Please use your emails from the class registration roster to add you to the team and you will receive an invitation from BitBucket to join the team. Since it is still a large class, please use your UIC email address for communications or Piazza and avoid emails from other accounts like funnybunny1992@gmail.com. If you don't receive a response within 12 hours, please contact us via Piazza, it may be a case that your direct emails went to the spam folder.
+---
 
-In case you have not done so, you will install [IntelliJ](https://www.jetbrains.com/student/) with your academic license, the JDK, the Scala runtime and the IntelliJ Scala plugin, the [Simple Build Toolkit (SBT)](https://www.scala-sbt.org/1.x/docs/index.html) and make sure that you can create, compile, and run Java and Scala programs. Please make sure that you can run [Java monitoring tools](https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/tooldescr025.html) or you can choose a newer JDK and tools if you want to use a more recent one.
+### Overview
 
-Please set up your account with [AWS Educate](https://aws.amazon.com/education/awseducate/). Using your UIC email address will enable you to receive free credits for running your jobs in the cloud.
+The objective of this homework was to process the [DBLP](https://dblp.uni-trier.de/) dataset using **Hadoop Map-Reduce framework** to find out the number of publications made by faculty in the Department of Computer Science at the University of Illinois at Chicago, and to generate a graph to visualize this output.
 
-You will use logging and configuration management frameworks. You will comment your code extensively and supply logging statements at different logging levels (e.g., TRACE, INFO, ERROR) to record information at some salient points in the executions of your programs. All input and configuration variables must be supplied through configuration files -- hardcoding these values in the source code is prohibited and will be punished by taking a large percentage of points from your total grade! You are expected to use [Logback](https://logback.qos.ch/) and [SLFL4J](https://www.slf4j.org/) for logging and [Typesafe Conguration Library](https://github.com/lightbend/config) for managing configuration files. These and other libraries should be exported into your project using your script [build.sbt](https://www.scala-sbt.org/1.0/docs/Basic-Def-Examples.html). These libraries and frameworks are widely used in the industry, so learning them is the time well spent to improve your resume.
+### Results
 
-As before, when writing your program code in Scala, you should avoid using **var**s and while/for loops that iterate over collections using [induction variables](https://en.wikipedia.org/wiki/Induction_variable). Instead, you should learn to use collection methods **map**, **flatMap**, **foreach**, **filter** and many others with lambda functions, which make your code linear and easy to understand. Also, avoid mutable variables at all cost. Points will be deducted for having many **var**s and inductive variable loops without explanation why mutation is needed in your code - you can always do without it.
+The results obtained after running the map reduce job were visualized using [Graphviz](http://www.graphviz.org/):
 
-## Overview
-In this homework, you will create a map/reduce program for parallel processing of the [publically available DBLP dataset](https://dblp.uni-trier.de) that contains entries for various publications at many different venues (e.g., conferences and journals). Raw [XML-based DMBLP dataset](https://dblp.uni-trier.de/xml) is also publically available along with its schema and the documentation.
+![Publications by Faculty of Computer Science - University of Illinois at Chicago](https://mrasto3.people.uic.edu/cs441/hw2/faculty_collaborations.png)
 
-Each entry in the dataset describes a publication, which contains the list of authors, the title, and the publication venue and a few other attributes. The file is approximately 2.5Gb - not big by today's standards, but large enough for this homework assignment. Each entry is independent from the other one in that it can be processed without synchronizing with processing some other entries.
+Each node is labelled with the faculty name and their total number of publications. The size and color of the nodes is relative to the **log of number of publications**. Logarithmic scale was chosen so that the node size of faculty with large number of publications is not too big in comparison to that of faculty with small number of publications. The log of maximum number of publications by any faculty is divided into 10 buckets to assign the colors using `set310` color scheme from the [Brewer color schemes](https://graphviz.gitlab.io/_pages/doc/info/colors.html#brewer).
 
-Consider the following entry in the dataset.
-```xml
-<inproceedings mdate="2017-05-24" key="conf/icst/GrechanikHB13">
-<author>Mark Grechanik</author>
-<author>B. M. Mainul Hossain</author>
-<author>Ugo Buy</author>
-<title>Testing Database-Centric Applications for Causes of Database Deadlocks.</title>
-<pages>174-183</pages>
-<year>2013</year>
-<booktitle>ICST</booktitle>
-<ee>https://doi.org/10.1109/ICST.2013.19</ee>
-<ee>http://doi.ieeecomputersociety.org/10.1109/ICST.2013.19</ee>
-<crossref>conf/icst/2013</crossref>
-<url>db/conf/icst/icst2013.html#GrechanikHB13</url>
-</inproceedings>
+Each edge in the graph is labelled with the number of publications that were co-authored by the faculty connected by those edges. The thickness of the edges is relative to the number of publications denoted by the edge.
+
+### Instructions
+
+#### My Environment
+
+The project was developed using the following environment:
+
+- **OS:** Windows 10 with Ubuntu 18.04 LTS running on Windows Subsystem for Linux (WSL)
+- **IDE:** IntelliJ IDEA Ultimate 2018.3
+- **Hypervisor:** VMware Workstation 15 Pro
+- **Hadoop Distribution:** [Hortonworks Data Platform (3.0.1) Sandbox](https://hortonworks.com/products/sandbox/) deployed on VMware
+
+#### Prerequisites
+
+- [HDP Sandbox](https://hortonworks.com/products/sandbox/) set up and deployed on (VMware or VirtualBox). Read this [guide](https://hortonworks.com/tutorial/learning-the-ropes-of-the-hortonworks-sandbox/) for instructions on how to set up and use HDP Sandbox
+- Ability to use SSH and SCP on your system
+- [SBT](https://www.scala-sbt.org/) installed on your system
+- [dblp.xml](https://dblp.uni-trier.de/xml/) downloaded on your system
+
+#### Running the map reduce job
+
+1. Clone or download this repository onto your system
+2. Open the Command Prompt (if using Windows) or the Terminal (if using Linux/Mac) and browse to the project directory
+3. Build the project and generate the jar file using SBT
+    
+    ```
+    sbt clean compile assembly
+    ```
+4. Start HDP sandbox VM
+5. Copy the jar file  to HDP Sandbox VM
+    
+    ```
+    scp -P 2222 target/scala-2.12/mayank_k_rastogi_hw2-assembly-0.1.jar root@sandbox-hdp.hortonworks.com:~/
+    ```
+6. Copy `dblp.xml` to HDP Sandbox
+    
+    ```
+    scp -P 2222 /path/to/dblp.xml root@sandbox-hdp.hortonworks.com:~/
+    ```
+7. SSH into HDP Sandbox
+    
+    ```
+    ssh -p 2222 root@sandbox-hdp.hortonworks.com
+    ```
+8. Create input directory on HDFS and copy `dblp.xml` there
+    
+    ```
+    hdfs dfs -mkdir input_dir
+    hdfs dfs -put dblp.xml input_dir/
+    ```
+9. Start the map-reduce job
+    
+    ```
+    hadoop jar mayank_k_rastogi_hw2-assembly-0.1.jar input_dir output_dir
+    ```
+10. You may check the logs using the YARN and grep. The application ID will get printed when the map-reduce job is run
+    
+    ```
+    yarn logs -applicationId application_<your-application-id> | grep FacultyCollaboration
+    ```
+
+#### Generating the `.dot` file
+
+1. Once the map-reduce job is finished, copy the output files from `output_dir` (on HDFS) to `map_reduce_output` (on HDP Sandbox)
+    
+    ```
+    hdfs dfs -get output_dir map_reduce_output
+    ```
+2. Logout from your SSH session on HDP Sandbox
+    
+    ```
+    exit
+    ```
+3. Copy the `map_reduce_output` directory to your local system
+    
+    ```
+    scp -P 2222 -r root@sandbox-hdp.hortonworks.com:~/map_reduce_output ./
+    ```
+4. Run the `GraphGenerator` to read `map_reduce_output` and generate `faculty_collaborations.dot` file
+    
+    ```
+    sbt "runMain com.mayankrastogi.cs441.hw2.graph.GraphGenerator map_reduce_output"
+    ```
+    
+#### Visualizing the graph using Viz.js
+
+[Viz.js](http://viz-js.com) is an online tool that uses [Graphviz](http://www.graphviz.org/) to generate graphs from `.dot` files. Although, we can use the Graphviz directly on our system, I could not manage to get the desired output from the command-line version of the program. It seemed to ignore parameters such as `splines=true` and `sep=3`, resulting in a lot of overlapping of node names in the generated image.
+
+Follow the below instructions to generate an image from the `faculty_collaborations.dot` file:
+
+1. Open `faculty_collaborations.dot` file in a text editor
+2. Copy all the contents of this file
+3. Open [Viz.js](http://viz-js.com) in your web browser
+4. Paste the contents of `faculty_collaborations.dot` in the left pane on the website
+5. Choose `neato` as the *engine* and the desired output format (say, .png)
+ 
+### Working of the Map Reduce Job 
+
+#### The `dblp.xml` file
+
+The `dblp.xml` file has `<dblp>` as the root element. Under `<dblp>`, we can have `<article>`, `<inproceedings>`, `<proceedings>`, `<book>`, `<incollection>`, `<phdthesis>`, `<mastersthesis>` or `<www>`. Since `<www>` holds information about an author and not a publication itself, we are ignoring this tag in our program.
+
+Except `<book>` and `<proceedings>`, each of these tags contain one or more `<author>` tags which denote an author for that publication. The `<book>` and `<proceedings>` tags have a similar tag `<editor>`. We treat both these tags as the same, which means that the presence of a faculty's name in either of these tags will count towards their total number of publications and collaborations.
+
+#### Sharding the input file into logical splits
+
+The `MultiTagXmlInputFormat` takes care of sharding the `dblp.xml` file into logical subsets that are fed into the `FacultyCollaborationMapper`. It reads the `dblp.xml` file and looks for one of these start tags - `<article `, `<inproceedings `, `<proceedings `, `<book `, `<incollection `, `<phdthesis `, `<mastersthesis `. Once a match is found, it stores all the bytes that appear after the matched start tag, into a buffer, until the corresponding end tag is found. This forms our logical split that is then fed into a mapper. The start and end tags to look for can be configured using `faculty-collaboration.xml-input.start-tags` and `faculty-collaboration.xml-input.end-tags` configuration settings in `application.conf`.
+
+#### Mapping the Input Splits
+
+The `FacultyCollaborationMapper` takes in a subset of `dblp.xml` file and parses it using Scala's `scala-xml` module. The mapper then extracts all the entries within `<author>` or `<editor>` tags and matches them against the list of faculty that belong to UIC's CS department, which is defined in `src/main/resources/uic-cs-faculty-list.txt`. This file maps the different variations of a faculty's name (that are known to appear in the `dblp.xml` file) to the faculty's name as it appears on the [UIC CS Department Website](https://cs.uic.edu/faculty/?).
+
+The list of faculty found associated with a publication is then sorted in lexicographical order and all combinations of pairs of faculty (nC2 + nC1) are generated from this list, and then joined with ` -- `. For example, if the list of authors extracted from the subset is `List("Philip S. Yu", "Ouri Wolfson", "Peter Nelson")`, then the following combinations will be generated:
+
+```
+Iterator(
+    "Ouri Wolfson",
+    "Peter Nelson",
+    "Philip S. Yu",
+    "Ouri Wolfson -- Peter Nelson",
+    "Ouri Wolfson -- Philip S. Yu",
+    "Peter Nelson -- Philip S. Yu"
+)
 ```
 
-This entry lists a paper at the IEEE International Conference on Software Testing, Verification and Validation (ICST) published in 2013 whose authors are my former Ph.D. student at UIC, now tenured Associate Professor at the University of Dhaka, Dr. B.M. Mainul Hussain whose advisor Mark Grechanik is a co-author on this paper. The third co-author is Prof.Ugo Buy, a faculty member at our CS department. The presence of two authors, Mark Grechanik and Ugo Buy in a single publication like this one establishes a connection between these faculty members. Your job is to create a "friendship" connectivity graph between UIC CS faculty members using the information extracted from this dataset. Paritioning this dataset into shards is easy, since it requires to preserve the well-formedness of XML only. Most likely, you will write a simple program to partition the dataset into an approximately equal size shards.
+*The sorting step ensures that **there is only one way** of forming a string that represents **the same combination** of two faculty.*
 
-As before, this homework script is written using a retroscripting technique, in which the homework outlines are generally and loosely drawn, and the individual students improvise to create the implementation that fits their refined objectives. In doing so, students are expected to stay within the basic requirements of the homework and they are free to experiments. Asking questions is important, so please ask away at Piazza!
+The mapper then emits these combinations as keys with a value of `1`, where each key having one faculty name represents a node and each key having a pair of faculty names represent an edge, such that the text file written to the disk with the results of a mapper will look like this:
 
-## Functionality
-Your homework assignment is to create a program using the map/reduce model for parallel processing of the publication dataset. Your goal is to produce a graph where the nodes are the faculty members of our CS department, the sizes of the nodes corresponds to the number of publication each faculty member has, and the edges correspond to joint publications between different faculty members. Each edge has a corresponding weight that shows the number of publications where two faculty members co-authored. Your job is to create the mapper and the reducer for this task, explain how they work, and then to implement them and run on the DBLP dataset. The output of your program produces a list of relations between our faculty members, i.e., <fk, (fr,..., fp)> where the faculty member, fk, published papers with the faculty members fr, ..., fp. Of course, you need to include weights in your chosen representation. The output of your map/reduce is an input to a graph visualization tool of **your choice** (e.g., [Gephi](https://gephi.org) or [GraphViz](https://www.graphviz.org)).
+```
+Ouri Wolfson	1
+Peter Nelson	1
+Philip S. Yu	1
+Ouri Wolfson -- Peter Nelson	1
+Ouri Wolfson -- Philip S. Yu	1
+Peter Nelson -- Philip S. Yu	1
+```
 
-You will create and run your software application using [Apache Hadoop](http://hadoop.apache.org/), a framework for distributed processing of large data sets across multiple computers (or even on a single node) using the map/reduce model. If your laptop/workstation is limited in its RAM, you can use [Cloudera QuickStart VM with the minimum req of RAM 4Gb](https://www.cloudera.com/downloads/quickstart_vms/5-12.html). Even though you can install and configure Hadoop on your computers, I recommend that you use a virtual machine (VM) of [Hortonworks Sandbox](http://hortonworks.com/products/sandbox/), a preconfigured Apache Hadoop installation with a comprehensive software stack. To run the VM, you can install vmWare or VirtualBox. As UIC students, you have access to free vmWare licenses, go to http://go.uic.edu/csvmware to obtain your free license. In some cases, I may have to provide your email addresses to a department administrator to enable your free VM academic licenses. Please notify me if you cannot register and gain access to the webstore.
+#### Reducing the output from the mappers
 
-The steps for obtaining your free academic vmWare licenses are the following:
+The job of `FacultyCollaborationReducer` is very simple. It simply adds up all the values of the same key to get the final count of number of publications by each individual faculty and each faculty pair. The output from the reducer is in the same format as that of the mapper.
 
-- Go to [Onthehub vmWare](http://go.uic.edu/csvmware).
+#### Interpreting the Map-Reduce output to generate a graph
 
-- Click on the "sign in" link at the top.
+The `GraphGenerator` reads the output files generated by the map-reduce job and generates a `.dot` file that can in turn be used to generate a graph using [Graphviz](http://www.graphviz.org/).
 
-- Click on "register".
+Since the output from the map-reduce job may consist of multiple part files, the program first concatenates all the files present in the specified input directory, except `_SUCCESS`. It then splits all the lines by new-line characters (`\n`, `\r`). Each line is then split by the tab character (`\t`) to get the keys and values. Separate lists of nodes and edges is then created depending on whether the keys contain ` -- ` or not.
 
-- Select "An account has been created..." and continue with the registration.
+The log of maximum number of publications by any faculty is divided into 10 buckets to assign the colors using `set310` color scheme from the [Brewer color schemes](https://graphviz.gitlab.io/_pages/doc/info/colors.html#brewer). The size of each node is determined by `log(number of publications) / log(maximum number of publications by any faculty)`. Similarly, the thickness of the edges is determined by `(number of publications co-authored by the faculty pair) / (maximum number of publications co-authored by any faculty pair)`.
 
-- Make sure that you use the UIC email with which you are registered with the system.
-
-Only UIC students who are registered for this course are eligible. If you are auditing the course, you need to contact the uic webstore directly. Alternatively, you can use [VirtualBox from Oracle Corp](https://www.virtualbox.org/).
-
-You can complete this homework using Scala and __you will immensely enjoy__ the embedded XML processing facilities that come with Scala. You will use Simple Build Tools (SBT) for building the project and running automated tests. I recommend that you run the downloaded VM locally in vmWare or VirtualBox to develop and test your program before you move it to AWS.
-
-Next, after creating and testing your map/reduce program locally, you will deploy it and run it on the Amazon Elastic MapReduce (EMR) - you can find plenty of [documentation online](http://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-work-with-steps.html). You will produce a short movie that documents all steps of the deployment and execution of your program with your narration and you will upload this movie to [youtube](www.youtube.com) and you will submit a link to your movie as part of your submission in the README.md file. To produce a movie, you may use an academic version of [Camtasia](https://shop.techsmith.com/store/techsm/en_US/cat/categoryID.67158100) or some other cheap/free screen capture technology from the UIC webstore or an application for a movie capture of your choice. The captured web browser content should show your login name in the upper right corner of the AWS application and you should introduce yourself in the beginning of the movie speaking into the camera.
-
-## Baseline Submission
-Your baseline project submission should include your map/reduce implementation, a conceptual explanation in the document or in the comments in the source code of how your mapper and reducer work to solve the problem, and the documentation that describe the build and runtime process, to be considered for grading. Your project submission should include all your source code written in Scala as well as non-code artifacts (e.g., configuration files), your project should be buildable using the SBT, and your documentation must specify how you paritioned the data and what input/outputs are. Simply copying Java programs from examples at the DBLP website and modifying them a bit will result in rejecting your submission.
-
-## Piazza collaboration
-You can post questions and replies, statements, comments, discussion, etc. on Piazza. For this homework, feel free to share your ideas, mistakes, code fragments, commands from scripts, and some of your technical solutions with the rest of the class, and you can ask and advise others using Piazza on where resources and sample programs can be found on the internet, how to resolve dependencies and configuration issues. When posting question and answers on Piazza, please select the appropriate folder, i.e., hw2 to ensure that all discussion threads can be easily located. Active participants and problem solvers will receive bonuses from the big brother :-) who is watching your exchanges on Piazza (i.e., your class instructor). However, *you must not describe your map/reduce design or specific details related how your construct your map/reduce pipeline!*
-
-## Git logistics
-**This is an individual homework.** Separate repositories will be created for each of your homeworks and for the course project. You will find a corresponding entry for this homework at git@bitbucket.org:cs441_spring2019/homework2.git. You will fork this repository and your fork will be private, no one else besides you, the TA and your course instructor will have access to your fork. Please remember to grant a read access to your repository to your TA and your instructor. In future, for the team homeworks and the course project, you should grant the write access to your forkmates, but NOT for this homework. You can commit and push your code as many times as you want. Your code will not be visible and it should not be visible to other students (except for your forkmates for a team project, but not for this homework). When you push the code into the remote repo, your instructor and the TA will see your code in your separate private fork. Making your fork public, pushing your code into the main repo, or inviting other students to join your fork for an individual homework will result in losing your grade. For grading, only the latest push timed before the deadline will be considered. **If you push after the deadline, your grade for the homework will be zero**. For more information about using the Git and Bitbucket specifically, please use this [link as the starting point](https://confluence.atlassian.com/bitbucket/bitbucket-cloud-documentation-home-221448814.html). For those of you who struggle with the Git, I recommend a book by Ryan Hodson on Ry's Git Tutorial. The other book called Pro Git is written by Scott Chacon and Ben Straub and published by Apress and it is [freely available](https://git-scm.com/book/en/v2/). There are multiple videos on youtube that go into details of the Git organization and use.
-
-Please follow this naming convention while submitting your work : "Firstname_Lastname_hw2" without quotes, where you specify your first and last names **exactly as you are registered with the University system**, so that we can easily recognize your submission. I repeat, make sure that you will give both your TA and the course instructor the read access to your *private forked repository*.
-
-## Discussions and submission
-You can post questions and replies, statements, comments, discussion, etc. on Piazza. Remember that you cannot share your code and your solutions privately, but you can ask and advise others using Piazza and StackOverflow or some other developer networks where resources and sample programs can be found on the Internet, how to resolve dependencies and configuration issues. Yet, your implementation should be your own and you cannot share it. Alternatively, you cannot copy and paste someone else's implementation and put your name on it. Your submissions will be checked for plagiarism. **Copying code from your classmates or from some sites on the Internet will result in severe academic penalties up to the termination of your enrollment in the University**. When posting question and answers on Piazza, please select the appropriate folder, i.e., hw1 to ensure that all discussion threads can be easily located.
-
-
-## Submission deadline and logistics
-Monday, February 25 at 3AM CST via the bitbucket repository. Your submission will include the code for the map/reduce program, your documentation with instructions and detailed explanations on how to assemble and deploy your map/reduce along with the results of its run, the visualization snapshot, and a document that explains these results based on the characteristics and the parameters of your simulations, and what the limitations of your implementation are. Again, do not forget, please make sure that you will give both your TA and your instructor the read access to your private forked repository. Your name should be shown in your README.md file and other documents. Your code should compile and run from the command line using the commands **sbt clean compile test** and **sbt clean compile run**. Also, you project should be IntelliJ friendly, i.e., your graders should be able to import your code into IntelliJ and run from there. Use .gitignore to exlude files that should not be pushed into the repo.
-
-
-## Evaluation criteria
-- the maximum grade for this homework is 5% with the bonus up to 3% for doing the AWS EMR part. Points are subtracted from this maximum grade: for example, saying that 2% is lost if some requirement is not completed means that the resulting grade will be 5%-2% => 3%; if the core homework functionality does not work, no bonus points will be given;
-- the code does not work in that it does not produce a correct output or crashes: up to 5% lost;
-- having less than five unit and/or integration tests: up to 4% lost;
-- missing comments and explanations from the program: up to 3% lost;
-- logging is not used in the program: up to 3% lost;
-- hardcoding the input values in the source code instead of using the suggested configuration libraries: up to 4% lost;
-- no instructions in README.md on how to install and run your program: up to 4% lost;
-- no instructions on how to use a visualizer to load the output of your program: up to 2% lost;
-- the documentation exists but it is insufficient to understand how you assembled and deployed all components of the cloud: up to 4% lost;
-- the minimum grade for this homework cannot be less than zero.
-
-That's it, folks!
+The above information is used to write the output in `.dot` format.
