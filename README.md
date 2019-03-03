@@ -23,7 +23,7 @@ Each edge in the graph is labelled with the number of publications that were co-
 
 The project was developed using the following environment:
 
-- **OS:** Windows 10 with Ubuntu 18.04 LTS running on Windows Subsystem for Linux (WSL)
+- **OS:** Windows 10
 - **IDE:** IntelliJ IDEA Ultimate 2018.3
 - **Hypervisor:** VMware Workstation 15 Pro
 - **Hadoop Distribution:** [Hortonworks Data Platform (3.0.1) Sandbox](https://hortonworks.com/products/sandbox/) deployed on VMware
@@ -68,6 +68,7 @@ The project was developed using the following environment:
     
     ```
     hdfs dfs -mkdir input_dir
+    
     hdfs dfs -put dblp.xml input_dir/
     ```
     
@@ -121,6 +122,10 @@ Follow the below instructions to generate an image from the `faculty_collaborati
 4. Paste the contents of `faculty_collaborations.dot` in the left pane on the website
 5. Choose `neato` as the *engine* and the desired output format (say, .png)
  
+### Tutorial on how to deploy the map-reduce job on AWS EMR
+
+To see a demo of how this project can be deployed on AWS Elastic Map Reduce (EMR), see this [video on YouTube](https://youtu.be/HPHIGnEvVdk)
+
 ### Working of the Map Reduce Job 
 
 #### The `dblp.xml` file
