@@ -1,0 +1,5 @@
+Hi Mayank!
+It was pleasure to grade your homework, and I don't say it very often! You tested the functionality of the mapper using Funsite, added a test for a lookup table, wrote a graph file generator, created a cool movie, among other things. Your code is well-commented. Your build.sbt is impressive - the combination of the task deploy with an external script is an interesting idea. Your documentation is written exceptionally well. You have all 5+3=8% points!
+
+Thank you,
+Mark
