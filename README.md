@@ -1,5 +1,5 @@
-## CS 441 - Engineering Distributed Objects for Cloud Computing
-## Homework 2
+## CS 441 &ndash; Engineering Distributed Objects for Cloud Computing
+## Homework 2 &ndash; Faculty Collaboration
 
 ---
 
@@ -126,6 +126,8 @@ Follow the below instructions to generate an image from the `faculty_collaborati
 
 To see a demo of how this project can be deployed on AWS Elastic Map Reduce (EMR), see this [video on YouTube](https://youtu.be/HPHIGnEvVdk)
 
+[![How to deploy Hadoop Map Reduce Job on AWS Elastic Map Reduce (EMR)](https://img.youtube.com/vi/HPHIGnEvVdk/maxresdefault.jpg)](https://youtu.be/HPHIGnEvVdk)
+
 ### Working of the Map Reduce Job 
 
 #### The `dblp.xml` file
@@ -136,7 +138,7 @@ Except `<book>` and `<proceedings>`, each of these tags contain one or more `<au
 
 #### Sharding the input file into logical splits
 
-The `MultiTagXmlInputFormat` takes care of sharding the `dblp.xml` file into logical subsets that are fed into the `FacultyCollaborationMapper`. It reads the `dblp.xml` file and looks for one of these start tags - `<article `, `<inproceedings `, `<proceedings `, `<book `, `<incollection `, `<phdthesis `, `<mastersthesis `. Once a match is found, it stores all the bytes that appear after the matched start tag, into a buffer, until the corresponding end tag is found. This forms our logical split that is then fed into a mapper. The start and end tags to look for can be configured using `faculty-collaboration.xml-input.start-tags` and `faculty-collaboration.xml-input.end-tags` configuration settings in `application.conf`.
+The `MultiTagXmlInputFormat` takes care of sharding the `dblp.xml` file into logical subsets that are fed into the `FacultyCollaborationMapper`. It reads the `dblp.xml` file and looks for one of these start tags &ndash; `<article `, `<inproceedings `, `<proceedings `, `<book `, `<incollection `, `<phdthesis `, `<mastersthesis `. Once a match is found, it stores all the bytes that appear after the matched start tag, into a buffer, until the corresponding end tag is found. This forms our logical split that is then fed into a mapper. The start and end tags to look for can be configured using `faculty-collaboration.xml-input.start-tags` and `faculty-collaboration.xml-input.end-tags` configuration settings in `application.conf`.
 
 #### Mapping the Input Splits
 
